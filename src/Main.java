@@ -8,6 +8,10 @@ public class Main {
 
     public static void main(String args[]) {
 
+        int ourTeam = 3096;
+
+        int lightDefenseDeficit, heavyDefenseDeficit;
+
         try {
             File data = new File("data.CSV");
             Scanner reader = new Scanner(data);
@@ -33,11 +37,30 @@ public class Main {
                     team.upperPort += Integer.parseInt(row[i]);
                 }
 
+                switch(row[20]) {
+                    case "None":
+                        break;
+                    case "Light":
+                        team.totalDefense++;
+                        break;
+                    case "Heavy":
+                        team.totalDefense += 2;
+                        break;
+                    default:
+                        break;
+                }
 
+                team.matches++;
             }
 
         } catch(Exception e) {
             System.out.println(e);
+        }
+
+
+
+        for(Team i : teamObjects) {
+
         }
 
         // Loop through all the different entries
@@ -47,4 +70,6 @@ public class Main {
                 // Add data to their respective variables in the correct team object
 
     }
+
+    
 }

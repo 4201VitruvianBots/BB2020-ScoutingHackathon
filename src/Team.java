@@ -1,6 +1,6 @@
 public class Team {
     int number;
-    int totalScore, matches;
+    int matches;
     public int lowerPort, upperPort;
     public int autoLowerPort, autoUpperPort;
     public int staging;
@@ -10,12 +10,5 @@ public class Team {
         this.number = number;
     }
 
-    public int getAverageScore() {
-        return totalScore / matches;
-    }
 
-    public void appendScore(int score) {
-        totalScore += score;
-        matches++;
-    }
 }
