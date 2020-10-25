@@ -60,7 +60,7 @@ public class Main {
 
 
         for(Team i : teamObjects) {
-
+            return(lowerPort + (2.5*upperPort) + (2*autoLowerPort) + (5*autoUpperPort)
         }
 
         // Loop through all the different entries
