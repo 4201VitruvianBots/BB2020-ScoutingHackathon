@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
-    static HashMap<Integer, Team> teamObjects;
+    static HashMap<Integer, Team> teamObjects; 
 
 
     public static void main(String args[]) {
@@ -48,7 +48,7 @@ public class Main {
                         break;
                     default:
                         break;
-                }
+                } //Gives points according to the amount of defense that the team had
 
                 team.matches++;
             }
@@ -60,7 +60,7 @@ public class Main {
 
 
         for(Team i : teamObjects) {
-            return(lowerPort + (2.5*upperPort) + (2*autoLowerPort) + (5*autoUpperPort)
+            return(lowerPort + (2.5*upperPort) + (2*autoLowerPort) + (5*autoUpperPort) //Calculates an average score for the entire performance of the match
         }
 
         // Loop through all the different entries
