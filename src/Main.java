@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class Main {
     static HashMap<Integer, Team> teamObjects = new HashMap<Integer, Team>();
 
-    static int[] alreadyPicked = {4768, 5498, 7865};
+    static int[] alreadyPicked = {4768, 5498, 7865, 3538};
 
     static int ourTeam = 3096;
     static double avgLowerPort = 0, avgUpperPort = 0, avgAutoLowerPort = 0, avgAutoUpperPort = 0, avgEndgame = 0;
@@ -14,10 +14,6 @@ public class Main {
 
     public static void main(String args[]) {
         teamObjects.put(0, new Team(0));
-
-        int[] testArray = {-5, -5, 3, 63, -2, 0, 1};
-        for (int i : indexOfSmallestThree(testArray))
-            System.out.println(i);
 
         int lightDefenseDeficit, heavyDefenseDeficit;
 
@@ -80,6 +76,7 @@ public class Main {
 
         } catch(Exception e) {
             System.out.println(e);
+            e.printStackTrace();
         }
 
 
@@ -140,14 +137,14 @@ public class Main {
         double[] ratios = {ratioLowerPort, ratioUpperPort, ratioAutoLowerPort, ratioAutoUpperPort, ratioEndgame};
         int[] lowestSkills = indexOfSmallestThree(ratios);
 
-        return findMatch();
+        return findMatch(lowestSkills);
     }
 
     public static int findMatch(int[] lowestSkills) {
         Team favoredTeam = teamObjects.get(0);
 
         for(int i : teamObjects.keySet()) {
-            if(Arrays.asList(alreadyPicked).contains(i) || i == ourTeam)
+            if(Arrays.asList(alreadyPicked).contains(i) || i == ourTeam || i == 0)
                 continue;
 
             Team currentTeam = teamObjects.get(i);
@@ -178,7 +175,7 @@ public class Main {
             favoredTeam = currentTeam.favor > favoredTeam.favor ? currentTeam : favoredTeam;                    // Update our favored team if necessary
         }
 
-        return favoredTeam.teamNumber;
+        return favoredTeam.number;
     }
 
     public static int[] indexOfSmallestThree(double[] array){
@@ -188,7 +185,7 @@ public class Main {
             return null;
 
         int[] index = {-1, -1, -1};
-        int[] m_array = array;
+        double[] m_array = array;
 
         for(int i = 0; i < index.length; i++) {                 // The tier of lessness
             for (int ii = 0; ii < m_array.length; ii++){          // The items to look through
@@ -202,6 +199,7 @@ public class Main {
 
 
         }
+
         return index;
     }
 }

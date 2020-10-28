@@ -1,6 +1,6 @@
 public class Team {
-    int number;
-    int matches;
+    public int number;
+    public int matches;
     public int lowerPort, upperPort;
     public int autoLowerPort, autoUpperPort;
     public int staging;
