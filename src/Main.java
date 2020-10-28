@@ -4,21 +4,26 @@ import java.util.Scanner;
 import java.util.Arrays;
 
 public class Main {
-    static HashMap<Integer, Team> teamObjects;
+    static HashMap<Integer, Team> teamObjects = new HashMap<Integer, Team>();
+
+    static int[] alreadyPicked = {4768, 5498, 7865};
+
+    static int ourTeam = 3096;
 
 
     public static void main(String args[]) {
 
-        System.out.println(indexOfSmallestThree([6, 7, 2, 8, 4, 5]));
 
-        /*int ourTeam = 3096;
-        int[] alreadyPicked = [4768, 5498, 7865];
+        int[] testArray = {6, 7, 2, 8, 4, 5};
+        for (int i : indexOfSmallestThree(testArray))
+            System.out.println(i);
 
         int lightDefenseDeficit, heavyDefenseDeficit;
 
         try {
-            File data = new File("data.CSV");
+            File data = new File("src/data.CSV");
             Scanner reader = new Scanner(data);
+            reader.nextLine();
             while(reader.hasNextLine()) {
                 Team team;
                 String[] row = reader.nextLine().split(",");
@@ -31,13 +36,13 @@ public class Main {
                     teamObjects.put(teamNumber, team);
                 }
 
-                team.autoLowerPort += Integer.parseInt(row[3]);
-                for(int i = 4; i < 9; i++) {
+                team.autoLowerPort += Integer.parseInt(row[4]);
+                for(int i = 5; i < 10; i++) {
                     team.autoUpperPort += Integer.parseInt(row[i]);
                 }
 
-                team.lowerPort += Integer.parseInt(row[11]);
-                for(int i = 12; i < 17; i++) {
+                team.lowerPort += Integer.parseInt(row[12]);
+                for(int i = 13; i < 18; i++) {
                     team.upperPort += Integer.parseInt(row[i]);
                 }
 
@@ -72,7 +77,7 @@ public class Main {
 
         } catch(Exception e) {
             System.out.println(e);
-        }*/
+        }
 
 
 
@@ -97,21 +102,23 @@ public class Main {
     // Find the best teams with respect to said fields of data
 
     public static void pickTeam(int ourTeam) {
-        int matches;
-        double lowerPort, upperPort, autoLowerPort, autoUpperPort, endgame;
-        double avgLowerPort, avgUpperPort, avgAutoLowerPort, avgAutoUpperPort, avgEndgame;
-        double ratioLowerPort, ratioUpperPort, ratioAutoLowerPort, ratioAutoUpperPort, ratioEndgame;
+        int matches = 0;
+        double lowerPort = 0, upperPort = 0, autoLowerPort = 0, autoUpperPort = 0, endgame = 0;
+        double avgLowerPort = 0, avgUpperPort = 0, avgAutoLowerPort = 0, avgAutoUpperPort = 0, avgEndgame = 0;
+        double ratioLowerPort = 0, ratioUpperPort = 0, ratioAutoLowerPort = 0, ratioAutoUpperPort = 0, ratioEndgame = 0;
 
-        for(Team i : teamObjects) {
-            if(alreadyPicked.contains(i.getKey()))
+        for(int i : teamObjects.keySet()) {
+            if(Arrays.asList(alreadyPicked).contains(i))
                 continue;
 
-            matches += i.matches;
-            lowerPort += i.lowerPort;
-            upperPort += i.upperPort;
-            autoLowerPort += i.autoLowerPort;
-            autoUpperPort += i.autoUpperPort;
-            endgame += i.endgamePoints;
+            Team currentTeam = teamObjects.get(i);
+
+            matches += currentTeam.matches;
+            lowerPort += currentTeam.lowerPort;
+            upperPort += currentTeam.upperPort;
+            autoLowerPort += currentTeam.autoLowerPort;
+            autoUpperPort += currentTeam.autoUpperPort;
+            endgame += currentTeam.endgamePoints;
         }
 
         avgAutoLowerPort = autoLowerPort / matches;
@@ -120,13 +127,13 @@ public class Main {
         avgUpperPort = upperPort / matches;
         avgEndgame = endgame / matches;
 
-        ratioLowerPort = teamObjects[ourTeam].lowerPort / avgLowerPort;
-        ratioUpperPort = teamObjects[ourTeam].upperPort / avgUpperPort;
-        ratioAutoLowerPort = teamObjects[ourTeam].autoLowerPort / avgAutoLowerPort;
-        ratioAutoUpperPort = teamObjects[ourTeam].autoUpperPort / avgAutoUpperPort;
-        ratioEndgame = teamObjects[ourTeam].endgamePoints / avgEndgame;
+        ratioLowerPort = teamObjects.get(ourTeam).lowerPort / avgLowerPort;
+        ratioUpperPort = teamObjects.get(ourTeam).upperPort / avgUpperPort;
+        ratioAutoLowerPort = teamObjects.get(ourTeam).autoLowerPort / avgAutoLowerPort;
+        ratioAutoUpperPort = teamObjects.get(ourTeam).autoUpperPort / avgAutoUpperPort;
+        ratioEndgame = teamObjects.get(ourTeam).endgamePoints / avgEndgame;
 
-        double[] ratios = [ratioLowerPort, ratioUpperPort, ratioAutoLowerPort, ratioAutoUpperPort, ratioEndgame];
+        double[] ratios = {ratioLowerPort, ratioUpperPort, ratioAutoLowerPort, ratioAutoUpperPort, ratioEndgame};
 
     }
 
@@ -134,14 +141,14 @@ public class Main {
 
         // add this
         if (array.length == 0)
-            return -1;
+            return null;
 
-        int[] index = [0, null, null];
-        int min = array[index];
+        int[] index = {-1, -1, -1};
+        int min = array[0];
 
-        for(int i = 0; i < min.length; i++) {
-            for (int ii = 0; i < array.length; ii++){
-                if (array[ii] <= min && !index.includes(ii)){
+        for(int i = 0; i < index.length; i++) {
+            for (int ii = 0; ii < array.length; ii++){
+                if (array[ii] <= min && ! Arrays.asList(index).contains(ii)) {
                     min = array[ii];
                     index[i] = ii;
                 }
