@@ -4,6 +4,7 @@ public class Team {
     public int lowerPort, upperPort;
     public int autoLowerPort, autoUpperPort;
     public int staging;
+    public int endgamePoints;
     public int totalDefense;
 
     public Team(int number) {
