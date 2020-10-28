@@ -9,10 +9,11 @@ public class Main {
     static int[] alreadyPicked = {4768, 5498, 7865};
 
     static int ourTeam = 3096;
+    static double avgLowerPort = 0, avgUpperPort = 0, avgAutoLowerPort = 0, avgAutoUpperPort = 0, avgEndgame = 0;
 
 
     public static void main(String args[]) {
-
+        teamObjects.put(0, new Team(0));
 
         int[] testArray = {-5, -5, 3, 63, -2, 0, 1};
         for (int i : indexOfSmallestThree(testArray))
@@ -75,6 +76,8 @@ public class Main {
                 team.matches++;
             }
 
+            System.out.println(pickTeam(ourTeam));
+
         } catch(Exception e) {
             System.out.println(e);
         }
@@ -101,10 +104,9 @@ public class Main {
     // Find the three (or so) we're lacking in in terms of said average
     // Find the best teams with respect to said fields of data
 
-    public static void pickTeam(int ourTeam) {
+    public static int pickTeam(int ourTeam) {
         int matches = 0;
         double lowerPort = 0, upperPort = 0, autoLowerPort = 0, autoUpperPort = 0, endgame = 0;
-        double avgLowerPort = 0, avgUpperPort = 0, avgAutoLowerPort = 0, avgAutoUpperPort = 0, avgEndgame = 0;
         double ratioLowerPort = 0, ratioUpperPort = 0, ratioAutoLowerPort = 0, ratioAutoUpperPort = 0, ratioEndgame = 0;
 
         for(int i : teamObjects.keySet()) {
@@ -127,17 +129,59 @@ public class Main {
         avgUpperPort = upperPort / matches;
         avgEndgame = endgame / matches;
 
-        ratioLowerPort = teamObjects.get(ourTeam).lowerPort / avgLowerPort;
-        ratioUpperPort = teamObjects.get(ourTeam).upperPort / avgUpperPort;
-        ratioAutoLowerPort = teamObjects.get(ourTeam).autoLowerPort / avgAutoLowerPort;
-        ratioAutoUpperPort = teamObjects.get(ourTeam).autoUpperPort / avgAutoUpperPort;
-        ratioEndgame = teamObjects.get(ourTeam).endgamePoints / avgEndgame;
+        System.out.println("Averages:\nLP: " + avgLowerPort + "\nUP: " + avgUpperPort + "\nALP: " + avgAutoLowerPort + "\nAUP: " + avgAutoUpperPort + "\nE: " + avgEndgame);
+
+        ratioLowerPort = (teamObjects.get(ourTeam).lowerPort / teamObjects.get(ourTeam).matches) / avgLowerPort;
+        ratioUpperPort = (teamObjects.get(ourTeam).upperPort / teamObjects.get(ourTeam).matches) / avgUpperPort;
+        ratioAutoLowerPort = (teamObjects.get(ourTeam).autoLowerPort / teamObjects.get(ourTeam).matches) / avgAutoLowerPort;
+        ratioAutoUpperPort = (teamObjects.get(ourTeam).autoUpperPort / teamObjects.get(ourTeam).matches) / avgAutoUpperPort;
+        ratioEndgame = (teamObjects.get(ourTeam).endgamePoints / teamObjects.get(ourTeam).matches) / avgEndgame;
 
         double[] ratios = {ratioLowerPort, ratioUpperPort, ratioAutoLowerPort, ratioAutoUpperPort, ratioEndgame};
+        int[] lowestSkills = indexOfSmallestThree(ratios);
 
+        return findMatch();
     }
 
-    public static int[] indexOfSmallestThree(int[] array){
+    public static int findMatch(int[] lowestSkills) {
+        Team favoredTeam = teamObjects.get(0);
+
+        for(int i : teamObjects.keySet()) {
+            if(Arrays.asList(alreadyPicked).contains(i) || i == ourTeam)
+                continue;
+
+            Team currentTeam = teamObjects.get(i);
+            currentTeam.favor = 0;                                              // Make sure favor value is reset
+
+            for(int ii : lowestSkills) {
+                switch(ii) {
+                    case 0:
+                        currentTeam.favor += (currentTeam.lowerPort / currentTeam.matches) / avgLowerPort;          // Add the ratio to the team's favorability
+                        break;
+                    case 1:
+                        currentTeam.favor += (currentTeam.upperPort / currentTeam.matches) / avgUpperPort;          // Add the ratio to the team's favorability
+                        break;
+                    case 2:
+                        currentTeam.favor += (currentTeam.autoLowerPort / currentTeam.matches) / avgAutoLowerPort;          // Add the ratio to the team's favorability
+                        break;
+                    case 3:
+                        currentTeam.favor += (currentTeam.autoUpperPort / currentTeam.matches) / avgAutoUpperPort;          // Add the ratio to the team's favorability
+                        break;
+                    case 4:
+                        currentTeam.favor += (currentTeam.endgamePoints / currentTeam.matches) / avgEndgame;          // Add the ratio to the team's favorability
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            favoredTeam = currentTeam.favor > favoredTeam.favor ? currentTeam : favoredTeam;                    // Update our favored team if necessary
+        }
+
+        return favoredTeam.teamNumber;
+    }
+
+    public static int[] indexOfSmallestThree(double[] array){
 
         // add this
         if (array.length == 0) 

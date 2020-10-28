@@ -7,6 +7,8 @@ public class Team {
     public int endgamePoints;
     public int totalDefense;
 
+    public double favor;                // Sum of ratios we care about
+
     public Team(int number) {
         this.number = number;
     }
