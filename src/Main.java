@@ -14,7 +14,7 @@ public class Main {
     public static void main(String args[]) {
 
 
-        int[] testArray = {6, 7, 2, 8, 4, 5};
+        int[] testArray = {-5, -5, 3, 63, -2, 0, 1};
         for (int i : indexOfSmallestThree(testArray))
             System.out.println(i);
 
@@ -140,19 +140,22 @@ public class Main {
     public static int[] indexOfSmallestThree(int[] array){
 
         // add this
-        if (array.length == 0)
+        if (array.length == 0) 
             return null;
 
         int[] index = {-1, -1, -1};
-        int min = array[0];
+        int[] m_array = array;
 
         for(int i = 0; i < index.length; i++) {                 // The tier of lessness
-            for (int ii = 0; ii < array.length; ii++){          // The items to look through
-                if (array[ii] <= min && index[(i - 1) % 3] != array[ii] && index[(i + 1) % 3] != array[ii]) {
-                    min = array[ii];
+            for (int ii = 0; ii < m_array.length; ii++){          // The items to look through
+                if(index[i] == -1) {
+                    index[i] = ii;
+                } else if(m_array[ii] < m_array[index[i]]) {
                     index[i] = ii;
                 }
             }
+            m_array[index[i]] = Integer.MAX_VALUE;
+
 
         }
         return index;
