@@ -146,9 +146,9 @@ public class Main {
         int[] index = {-1, -1, -1};
         int min = array[0];
 
-        for(int i = 0; i < index.length; i++) {
-            for (int ii = 0; ii < array.length; ii++){
-                if (array[ii] <= min && ! Arrays.asList(index).contains(ii)) {
+        for(int i = 0; i < index.length; i++) {                 // The tier of lessness
+            for (int ii = 0; ii < array.length; ii++){          // The items to look through
+                if (array[ii] <= min && index[(i - 1) % 3] != array[ii] && index[(i + 1) % 3] != array[ii]) {
                     min = array[ii];
                     index[i] = ii;
                 }
