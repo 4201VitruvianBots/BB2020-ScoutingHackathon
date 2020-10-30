@@ -6,10 +6,10 @@ import java.util.Arrays;
 public class Main {
     static HashMap<Integer, Team> teamObjects = new HashMap<Integer, Team>();
 
-    static int[] alreadyPicked = {3538, 1481, 548, 2591, 33, 573, 247, 6742, 3414, 4768, 6013, 240, 3096, 835, 6120, 5214, 5577, 5090, 8179, 4758, 5498, 94, 8280};
+    static int[] alreadyPicked = {3538};
 //  3538, 1481, 548, 2591, 33, 573, 247, 6742, 3414, 4768, 6013, 240, 3096, 835, 6120, 5214, 5577, 5090, 8179, 4758, 5498, 94, 7232, 7856, 5695
     static int ourTeam = 4130;
-    static double avgTeleOpPowerScore = 0, avgAutoPowerScore = 0, avgEndgame = 0, avgDefense = 0;
+    static double avgTeleOpPowerScore = 0, avgAutoPowerScore = 0, avgEndgame = 0, avgDefense = 0, avgFoul = 0;
 
     public static boolean arrayContainsElement(int[] array, int element) {
         for (int i : array) {
@@ -77,6 +77,8 @@ public class Main {
                     team.endgamePoints += 15;
                 }
 
+                team.foulPoints += Integer.parseInt(row[24]);
+
                 team.matches++;
             }
 
@@ -111,7 +113,7 @@ public class Main {
 
     public static void calculateAverages() {
         int teams = 0;
-        double teleOpPowerScoreAvgs = 0, autoPowerScoreAvgs = 0, endgame = 0, defense = 0;
+        double teleOpPowerScoreAvgs = 0, autoPowerScoreAvgs = 0, endgame = 0, defense = 0, foul = 0;
 
         for(int i : teamObjects.keySet()) {
             if(arrayContainsElement(alreadyPicked, i) || i == 0)
@@ -125,30 +127,32 @@ public class Main {
             autoPowerScoreAvgs += currentTeam.autoPowerScore / currentTeam.matches;
             endgame += currentTeam.endgamePoints / currentTeam.matches;
             defense += currentTeam.totalDefense / currentTeam.matches;
+            foul += currentTeam.foulPoints / currentTeam.matches;
         }
 
         avgAutoPowerScore = autoPowerScoreAvgs / teams;
         avgTeleOpPowerScore = teleOpPowerScoreAvgs / teams;
         avgEndgame = endgame / teams;
         avgDefense = defense / teams;
+        avgFoul = foul / teams;
 
-        System.out.println("Averages:\nTPS: " + avgTeleOpPowerScore + "\nAPS: " + avgAutoPowerScore + "\nE:   " + avgEndgame + "\nD:   " + avgDefense);
+        System.out.println("Averages:\nTPS: " + avgTeleOpPowerScore + "\nAPS: " + avgAutoPowerScore + "\nE:   " + avgEndgame + "\nD:   " + avgDefense + "\nF-:  " + avgFoul);
     }
 
     public static int pickTeam(int ourTeam) {
         calculateAverages();
 
         Team ourTeamObject = teamObjects.get(ourTeam);
-        double ratioTeleOpPowerScore = 0, ratioAutoPowerScore = 0, ratioEndgame = 0, ratioDefense = 0;
 
-        ratioAutoPowerScore = ourTeamObject.autoPowerScore / ourTeamObject.matches / avgAutoPowerScore;
-        ratioTeleOpPowerScore = ourTeamObject.teleOpPowerScore / ourTeamObject.matches / avgTeleOpPowerScore;
-        ratioEndgame = ourTeamObject.endgamePoints / ourTeamObject.matches / avgEndgame;
-        ratioDefense = ourTeamObject.totalDefense / ourTeamObject.matches / avgDefense;
+        ourTeamObject.ratioAutoPowerScore = ourTeamObject.autoPowerScore / ourTeamObject.matches / avgAutoPowerScore;
+        ourTeamObject.ratioTeleOpPowerScore = ourTeamObject.teleOpPowerScore / ourTeamObject.matches / avgTeleOpPowerScore;
+        ourTeamObject.ratioEndgame = ourTeamObject.endgamePoints / ourTeamObject.matches / avgEndgame;
+        ourTeamObject.ratioDefense = ourTeamObject.totalDefense / ourTeamObject.matches / avgDefense;
 
-        System.out.println("Ratios:\nTPS: " + ratioTeleOpPowerScore + "\nAPS: " + ratioAutoPowerScore + "\nE:   " + ratioEndgame + "\nD:   " + ratioDefense);
+        System.out.println("Ratios:\nTPS: " + ourTeamObject.ratioTeleOpPowerScore + "\nAPS: " + ourTeamObject.ratioAutoPowerScore + "\nE:   " 
+        + ourTeamObject.ratioEndgame + "\nD:   " + ourTeamObject.ratioDefense);
 
-        double[] ratios = {ratioTeleOpPowerScore, ratioAutoPowerScore, ratioEndgame, ratioDefense};
+        double[] ratios = {ourTeamObject.ratioTeleOpPowerScore, ourTeamObject.ratioAutoPowerScore, ourTeamObject.ratioEndgame, ourTeamObject.ratioDefense};
         int[] lowestSkills = indexOfSmallestThree(ratios);
 
         return findMatch(lowestSkills);
@@ -161,30 +165,33 @@ public class Main {
             if(arrayContainsElement(alreadyPicked, i) || i == ourTeam || i == 0)
                 continue;
 
-            Team currentTeam = teamObjects.get(i);
-            currentTeam.favor = 0;                                              // Make sure favor value is reset
+            Team currentTeam = teamObjects.get(i);                                       // Make sure favor value is reset
 
             for(int ii : lowestSkills) {
                 switch(ii) {
                     case 0:
-                        currentTeam.favor += currentTeam.teleOpPowerScore / currentTeam.matches / avgTeleOpPowerScore; // Add the ratio to the team's favorability
+                        currentTeam.ratioTeleOpPowerScore = currentTeam.teleOpPowerScore / currentTeam.matches / avgTeleOpPowerScore; // Add the ratio to the team's favorability
                         break;
                     case 1:
-                        currentTeam.favor += currentTeam.autoPowerScore / currentTeam.matches / avgAutoPowerScore;      // Add the ratio to the team's favorability
+                        currentTeam.ratioAutoPowerScore = currentTeam.autoPowerScore / currentTeam.matches / avgAutoPowerScore;      // Add the ratio to the team's favorability
                         break;
                     case 2:
-                        currentTeam.favor += currentTeam.endgamePoints / currentTeam.matches / avgEndgame;   // Add the ratio to the team's favorability
+                        currentTeam.ratioEndgame = currentTeam.endgamePoints / currentTeam.matches / avgEndgame;   // Add the ratio to the team's favorability
                         break;
                     case 3:
-                        currentTeam.favor += currentTeam.totalDefense / currentTeam.matches / avgDefense;
+                        currentTeam.ratioDefense = currentTeam.totalDefense / currentTeam.matches / avgDefense;
                     default:
                         break;
                 }
             }
+            currentTeam.ratioFoul = currentTeam.foulPoints / currentTeam.matches / avgFoul;
+            currentTeam.favor = currentTeam.ratioAutoPowerScore + currentTeam.ratioTeleOpPowerScore + currentTeam.ratioEndgame + currentTeam.ratioDefense - 0.5 * currentTeam.ratioFoul;
+
+            //currentTeam.favor -= 0.5 * currentTeam.foulPoints / currentTeam.matches / avgFoul;
             favoredTeam = currentTeam.favor > favoredTeam.favor ? currentTeam : favoredTeam;                    // Update our favored team if necessary
         }
         //System.out.println((double) favoredTeam.lowerPort / favoredTeam.matches / avgLowerPort);
-
+        System.out.println("Favored team's favor is: " + favoredTeam.favor);
         return favoredTeam.number;
     }
 
