@@ -184,7 +184,11 @@ public class Main {
                         break;
                 }
             }
-            currentTeam.ratioFoul = currentTeam.foulPoints / currentTeam.matches / avgFoul;
+            if(avgFoul == 0) {
+                currentTeam.ratioFoul = 0;
+            } else {
+                currentTeam.ratioFoul = currentTeam.foulPoints / currentTeam.matches / avgFoul;
+            }
             currentTeam.favor = currentTeam.ratioAutoPowerScore + currentTeam.ratioTeleOpPowerScore + currentTeam.ratioEndgame + currentTeam.ratioDefense - 0.5 * currentTeam.ratioFoul;
 
             //currentTeam.favor -= 0.5 * currentTeam.foulPoints / currentTeam.matches / avgFoul;
