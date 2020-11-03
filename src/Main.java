@@ -1,14 +1,19 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Arrays;
 
 public class Main {
+    static int[] alreadyPicked = {};
+
     static HashMap<Integer, Team> teamObjects = new HashMap<Integer, Team>();
 
-    static int[] alreadyPicked = {3538};
+    static double weightOfAutoPoints, weightOfTeleOpPoints, weightOfEndgame, weightOfDefense;
+    static double weightOfFouls = 0.5; // How important are fouls compared to other game elements
+    
 //  3538, 1481, 548, 2591, 33, 573, 247, 6742, 3414, 4768, 6013, 240, 3096, 835, 6120, 5214, 5577, 5090, 8179, 4758, 5498, 94, 7232, 7856, 5695
-    static int ourTeam = 4130;
+    static int ourTeam;
     static double avgTeleOpPowerScore = 0, avgAutoPowerScore = 0, avgEndgame = 0, avgDefense = 0, avgFoul = 0;
 
     public static boolean arrayContainsElement(int[] array, int element) {
@@ -26,6 +31,20 @@ public class Main {
         int lightDefenseDeficit, heavyDefenseDeficit;
 
         try {
+            System.out.print("Enter your team number: ");
+            Scanner scanner = new Scanner(System.in);
+            ourTeam = scanner.nextInt();
+
+            System.out.println("Enter numbers representing the importance of having the team that is best at the following game aspects");
+            System.out.print("Autonomous power cells: ");
+            weightOfAutoPoints = scanner.nextDouble();
+            System.out.print("Tele-op power cells:    ");
+            weightOfTeleOpPoints = scanner.nextDouble();
+            System.out.print("Endgame:                ");
+            weightOfEndgame = scanner.nextDouble();
+            System.out.print("Defense:                ");
+            weightOfDefense = scanner.nextDouble();
+
             File data = new File("src/data.CSV");
             Scanner reader = new Scanner(data);
             reader.nextLine();
@@ -77,12 +96,13 @@ public class Main {
                     team.endgamePoints += 15;
                 }
 
-                team.foulPoints += Integer.parseInt(row[24]);
+                team.fouls += Integer.parseInt(row[24]);
+                team.fouls += Integer.parseInt(row[25]) * 5;
 
                 team.matches++;
             }
 
-            System.out.println(pickTeam(ourTeam));
+            System.out.println("We suggest that you pick team " + pickTeam(ourTeam));
 
         } catch(Exception e) {
             System.out.println(e);
@@ -99,12 +119,6 @@ public class Main {
                 // Add data to their respective variables in the correct team object
 
     }
-
-    /*public static getTeamTotalScore() {
-        for (Team i : teamObjects) {
-            return lowerPort + (2.5 * upperPort) + (2 * autoLowerPort) + (5 * autoUpperPort) //Calculates an average score for the entire performance of the match
-        }
-    }*/
 
     // ALGORITHM FOR PICKING A TEAM
     // Find the averages for all the different fields of data
@@ -127,7 +141,7 @@ public class Main {
             autoPowerScoreAvgs += currentTeam.autoPowerScore / currentTeam.matches;
             endgame += currentTeam.endgamePoints / currentTeam.matches;
             defense += currentTeam.totalDefense / currentTeam.matches;
-            foul += currentTeam.foulPoints / currentTeam.matches;
+            foul += currentTeam.fouls / currentTeam.matches;
         }
 
         avgAutoPowerScore = autoPowerScoreAvgs / teams;
@@ -135,7 +149,7 @@ public class Main {
         avgEndgame = endgame / teams;
         avgDefense = defense / teams;
         avgFoul = foul / teams;
-
+        
         System.out.println("Averages:\nTPS: " + avgTeleOpPowerScore + "\nAPS: " + avgAutoPowerScore + "\nE:   " + avgEndgame + "\nD:   " + avgDefense + "\nF-:  " + avgFoul);
     }
 
@@ -153,13 +167,13 @@ public class Main {
         + ourTeamObject.ratioEndgame + "\nD:   " + ourTeamObject.ratioDefense);
 
         double[] ratios = {ourTeamObject.ratioTeleOpPowerScore, ourTeamObject.ratioAutoPowerScore, ourTeamObject.ratioEndgame, ourTeamObject.ratioDefense};
-        int[] lowestSkills = indexOfSmallestThree(ratios);
 
-        return findMatch(lowestSkills);
+        return findMatch(ourTeamObject);
     }
 
-    public static int findMatch(int[] lowestSkills) {
+    public static int findMatch(Team ourTeamObject) {
         Team favoredTeam = teamObjects.get(0);
+        String logDump = "";
 
         for(int i : teamObjects.keySet()) {
             if(arrayContainsElement(alreadyPicked, i) || i == ourTeam || i == 0)
@@ -167,39 +181,47 @@ public class Main {
 
             Team currentTeam = teamObjects.get(i);                                       // Make sure favor value is reset
 
-            for(int ii : lowestSkills) {
-                switch(ii) {
-                    case 0:
-                        currentTeam.ratioTeleOpPowerScore = currentTeam.teleOpPowerScore / currentTeam.matches / avgTeleOpPowerScore; // Add the ratio to the team's favorability
-                        break;
-                    case 1:
-                        currentTeam.ratioAutoPowerScore = currentTeam.autoPowerScore / currentTeam.matches / avgAutoPowerScore;      // Add the ratio to the team's favorability
-                        break;
-                    case 2:
-                        currentTeam.ratioEndgame = currentTeam.endgamePoints / currentTeam.matches / avgEndgame;   // Add the ratio to the team's favorability
-                        break;
-                    case 3:
-                        currentTeam.ratioDefense = currentTeam.totalDefense / currentTeam.matches / avgDefense;
-                    default:
-                        break;
-                }
-            }
-            if(avgFoul == 0) {
+            currentTeam.ratioTeleOpPowerScore = currentTeam.teleOpPowerScore / currentTeam.matches / avgTeleOpPowerScore; // Add the ratio to the team's favorability
+            currentTeam.ratioAutoPowerScore = currentTeam.autoPowerScore / currentTeam.matches / avgAutoPowerScore;      // Add the ratio to the team's favorability
+            currentTeam.ratioEndgame = currentTeam.endgamePoints / currentTeam.matches / avgEndgame;   // Add the ratio to the team's favorability
+            currentTeam.ratioDefense = currentTeam.totalDefense / currentTeam.matches / avgDefense;
+            currentTeam.ratioFoul = currentTeam.fouls / currentTeam.matches / avgFoul;
+
+            /*if(avgFoul == 0) {
                 currentTeam.ratioFoul = 0;
             } else {
-                currentTeam.ratioFoul = currentTeam.foulPoints / currentTeam.matches / avgFoul;
-            }
-            currentTeam.favor = currentTeam.ratioAutoPowerScore + currentTeam.ratioTeleOpPowerScore + currentTeam.ratioEndgame + currentTeam.ratioDefense - 0.5 * currentTeam.ratioFoul;
+                currentTeam.ratioFoul = currentTeam.fouls / currentTeam.matches / avgFoul;
+            }*/
+            currentTeam.favor = 
+                weightOfAutoPoints * currentTeam.ratioAutoPowerScore / Math.sqrt(ourTeamObject.ratioAutoPowerScore)
+                + weightOfTeleOpPoints * currentTeam.ratioTeleOpPowerScore / Math.sqrt(ourTeamObject.ratioTeleOpPowerScore)
+                + weightOfEndgame * currentTeam.ratioEndgame / Math.sqrt(ourTeamObject.ratioEndgame)
+                + weightOfDefense * currentTeam.ratioDefense / Math.sqrt(ourTeamObject.ratioDefense)
+                - weightOfFouls * currentTeam.ratioFoul;
 
+            logDump += "\n\nTeam " + i + ": " + currentTeam.favor;
+            logDump += "\n\tTPS: " + currentTeam.ratioTeleOpPowerScore;
+            logDump += "\n\tAPS: " + currentTeam.ratioAutoPowerScore;
+            logDump += "\n\tE:   " + currentTeam.ratioEndgame;
+            logDump += "\n\tD:   " + currentTeam.ratioDefense;
+            logDump += "\n\tF-:  " + currentTeam.ratioFoul;
+            
             //currentTeam.favor -= 0.5 * currentTeam.foulPoints / currentTeam.matches / avgFoul;
             favoredTeam = currentTeam.favor > favoredTeam.favor ? currentTeam : favoredTeam;                    // Update our favored team if necessary
         }
         //System.out.println((double) favoredTeam.lowerPort / favoredTeam.matches / avgLowerPort);
+        try {
+            FileWriter log = new FileWriter("src/log.fif");
+            log.write(logDump);
+            log.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("Favored team's favor is: " + favoredTeam.favor);
         return favoredTeam.number;
     }
 
-    public static int[] indexOfSmallestThree(double[] array){
+    /*public static int[] indexOfSmallestThree(double[] array){
 
         // add this
         if (array.length == 0) 
@@ -222,5 +244,5 @@ public class Main {
         }
 
         return index;
-    }
+    }*/
 }

@@ -8,9 +8,9 @@ public class Team {
     public double staging;
     public double endgamePoints;
     public double totalDefense;
-    public double foulPoints;
+    public double fouls;
 
-    public double ratioTeleOpPowerScore = 0, ratioAutoPowerScore = 0, ratioEndgame = 0, ratioDefense = 0, ratioFoul;
+    public double ratioTeleOpPowerScore = 0, ratioAutoPowerScore = 0, ratioEndgame = 0, ratioDefense = 0, ratioFoul = 0;
 
     public double favor;                // Sum of ratios we care about
 

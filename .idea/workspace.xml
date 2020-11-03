@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c6be6920-761a-4532-a9f3-4e4749bcc3c8" name="Default Changelist" comment="" />
+    <list default="true" id="c6be6920-761a-4532-a9f3-4e4749bcc3c8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,7 +23,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../HDTE/src/HTEC.ASM" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -42,10 +44,11 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="475" y="147" key="FileChooserDialogImpl" timestamp="1603924115553">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state x="570" y="178" key="FileChooserDialogImpl" timestamp="1604201810989">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="475" y="147" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1603924115553" />
+    <state x="570" y="178" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604201810989" />
     <state x="280" y="4" key="SettingsEditor" timestamp="1603925319722">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
