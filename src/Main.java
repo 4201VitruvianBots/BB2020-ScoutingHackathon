@@ -20,7 +20,7 @@ public class Main {
         Have fun, stay safe, and probability says we shall never meet each other.
         So I guess I won't see you in that higher level of abstraction.
      */
-    static int[] alreadyPicked = {};
+    static int[] alreadyPicked = {4130, 3538, 1481, 548};
 
     static HashMap<Integer, Team> teamObjects = new HashMap<Integer, Team>();   // This HashMap stores Team objects as well as their numbers, so we can
                                                                                 // access a team's object quickly, only knowing the number.
@@ -118,7 +118,7 @@ public class Main {
                 team.matches++;                                     // Account for this match
             }
 
-            System.out.println("We suggest that you pick team " + pickTeam(ourTeam));   // All of the major work, condensed down to one line!
+            System.out.println("\nWe suggest that you pick team " + pickTeam(ourTeam) + "\n");   // All of the major work, condensed down to one line!
 
         } catch(Exception e) {                                      // Again, people don't all have hard drives. So sad.
             System.out.println(e);
@@ -238,7 +238,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        System.out.println("Favored team's favor is: " + favoredTeam.favor);
+        //System.out.println("Favored team's favor is: " + favoredTeam.favor);
         return favoredTeam.number;                                              // The answer
     }
 
